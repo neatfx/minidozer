@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Minidozer</title>
+  <meta charset="utf-8">
+  <!-- CSS Injection -->
+  <% for (item of htmlWebpackPlugin.options.files.css) { %>
+  <link href="<%= item %>" rel="stylesheet">
+  <% } %>
+</head>
+
+<body>
+  <div id="react-root"></div>
+  <!-- JavaScript Injection -->
+  <% for (file of htmlWebpackPlugin.options.scripts) { %>
+  <script src="<%= file %>" type="text/javascript"></script>
+  <% } %>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+productName: 'Minidozer'
+appId: 'com.electron.minidozer'
+copyright: 'Copyright © 2019'
+electronVersion: '6.0.0-beta.5'
+buildVersion: ''
+extraMetadata:
+  credits: 'crafted with open source and love'
+nodeGypRebuild: false
+compression: 'store'
+asar: true
+directories:
+  output: 'build'
+files:
+  - 'dist/electron'
+dmg:
+  contents:
+    - x: 410
+      y: 150
+      type: 'link'
+      path: '/Applications'
+    - x: 130
+      y: 150
+      type: 'file'
+mac:
+  category: 'public.app-category.utilities'
+  target: 'dmg'
+  type: 'distribution'
+  icon: 'dist/electron/icons/icon.icns'
+  identity: null

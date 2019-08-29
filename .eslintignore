@@ -1,0 +1,5 @@
+scripts/*
+main-process/icons/*
+dist/*
+config/*
+build/*

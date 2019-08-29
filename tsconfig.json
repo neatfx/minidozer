@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "sourceMap": true,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    // "allowSyntheticDefaultImports": true,
+    // "experimentalDecorators": true
+  },
+  "include": [
+    "main-process",
+    "renderer-process",
+    "common"
+  ],
+  "exclude": [
+    "node_modules",
+    "scripts"
+  ]
+}
