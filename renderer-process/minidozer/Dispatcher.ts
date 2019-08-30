@@ -31,6 +31,12 @@ interface Dispatch<T> {
     (actionType: T, payload?: object): Promise<Status>;
 }
 
+export enum ActionStatus {
+    PENDING = 'PENDING',
+    SUCCESS = 'SUCCESS',
+    FAILED = 'FAILED' 
+}
+
 const tracer = new Tracer('Core.Dispatcher')
 
 function formatTrace<State>(from: string, prevState: State, action: Action, nextState: State): void {
@@ -50,7 +56,7 @@ export function useDispatcher<T>(moduleName: string, actions: Actions, store: St
 
         const preAction = {
             type: actionType as unknown as string,
-            status: 'PENDING',
+            status: ActionStatus.PENDING,
             response: '',
             payload: payload,
             createdAt: Date.now()
@@ -59,14 +65,14 @@ export function useDispatcher<T>(moduleName: string, actions: Actions, store: St
         setSuspense(suspend(preAction))
         const result = await Promise.resolve(actionCreator(preAction))
 
-        if (result.status === 'PENDING') {
-            result.status = 'SUCCESS'
+        if (result.status === ActionStatus.PENDING) {
+            result.status = ActionStatus.SUCCESS
             const prevState = store.getState()
             store.dispatch(result)
             formatTrace(moduleName, prevState, result, store.getState())
         }
 
-        if (result.status === 'FAILED' || result.response) {
+        if (result.status === ActionStatus.FAILED || result.response) {
             setSuspense(suspend(result))
         }
 
