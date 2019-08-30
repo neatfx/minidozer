@@ -25,7 +25,7 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
   - 模块化
     - 内置 Hook API 实现
     - 内置模块路由
-    - 内置 Action 操作状态信息队列
+    - 暂态处理 - 内置 Action 操作状态信息队列
   - 状态管理
     - 部分依赖 Redux 实现
     - 分散化 State（基于模块化）
