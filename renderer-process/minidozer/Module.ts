@@ -1,7 +1,7 @@
 import { useState, useEffect, ReactElement, PropsWithChildren } from 'react'
 import { Unsubscribe, createStore, AnyAction, Store } from 'redux'
 
-import { Status, Action, useDispatcher } from './Dispatcher'
+import { Action, useDispatcher } from './Dispatcher'
 import { Tracer } from './Utils'
 
 export interface Actions {
@@ -16,9 +16,9 @@ interface RouterProps {
 }
 interface ContextProps<S, T> {
     state: S;
-    suspense: Status[];
+    suspense: Action[];
     tracer: Tracer;
-    dispatch: (actionType: T, payload?: object) => Promise<Status>;
+    dispatch: (actionType: T, payload?: object) => Promise<Action>;
 }
 interface Module<P, S, T> {
     (props: PropsWithChildren<RouterProps> & P & ContextProps<S, T>): ReactElement; 

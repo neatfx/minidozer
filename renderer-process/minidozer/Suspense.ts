@@ -1,14 +1,15 @@
-import { Action, Status, ActionStatus } from './Dispatcher'
+import { Action, ActionStatus } from './Dispatcher'
 
-let suspenseQueue: Status[] = []
+let suspenseQueue: Action[] = []
 
-export function useSuspense(): [(action: Action, destroy?: boolean) => Status[]] {
-    const suspend = (action: Action, destroy: boolean = false): Status[] => { 
+export function useSuspense(): [(action: Action, destroy?: boolean) => Action[]] {
+    const suspend = (action: Action, destroy: boolean = false): Action[] => { 
         suspenseQueue = [...suspenseQueue].filter((item): boolean => item.createdAt !== action.createdAt)
         if(!destroy){
             if(action.status === ActionStatus.PENDING) {
                 suspenseQueue.push({
                     type: action.type,
+                    status: action.status,
                     createdAt: action.createdAt
                 })
 
@@ -16,6 +17,7 @@ export function useSuspense(): [(action: Action, destroy?: boolean) => Status[]]
             if(action.status === ActionStatus.SUCCESS && action.response) {
                 suspenseQueue.push({
                     type: action.type,
+                    status: action.status,
                     response: action.response,
                     createdAt: action.createdAt
                 })
@@ -23,6 +25,7 @@ export function useSuspense(): [(action: Action, destroy?: boolean) => Status[]]
             if(action.status === ActionStatus.FAILED) {
                 suspenseQueue.push({
                     type: action.type,
+                    status: action.status,
                     failure: action.failure,
                     createdAt: action.createdAt
                 })

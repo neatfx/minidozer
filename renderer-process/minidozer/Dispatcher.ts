@@ -17,18 +17,8 @@ export interface Action<T = object> {
     createdAt: number;
 }
 
-export interface Status {
-    type: string;
-    failure?: {
-        type: string;
-        error?: string;
-    };
-    response?: string;
-    createdAt: number;
-}
-
 interface Dispatch<T> {
-    (actionType: T, payload?: object): Promise<Status>;
+    (actionType: T, payload?: object): Promise<Action>;
 }
 
 export enum ActionStatus {
@@ -48,10 +38,10 @@ function formatTrace<State>(from: string, prevState: State, action: Action, next
     })
 }
 
-export function useDispatcher<T>(moduleName: string, actions: Actions, store: Store): [Dispatch<T>, Status[]] {
-    const [suspense, setSuspense] = useState<Status[]>([])
+export function useDispatcher<T>(moduleName: string, actions: Actions, store: Store): [Dispatch<T>, Action[]] {
+    const [suspense, setSuspense] = useState<Action[]>([])
     const [suspend] = useSuspense()
-    const dispatch = async (actionType: T, payload?: object): Promise<Status> => {
+    const dispatch = async (actionType: T, payload?: object): Promise<Action> => {
         const actionCreator = actions[actionType as unknown as string]
 
         const preAction = {
