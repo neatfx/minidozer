@@ -1,7 +1,6 @@
-import { useState } from 'react'
-import { Store } from 'redux'
+import { useState, useReducer } from 'react'
 
-import { Actions } from './Module'
+import { Actions, Reducer } from './Module'
 import { useSuspense } from './Suspense'
 import { Tracer } from './Utils'
 
@@ -38,10 +37,20 @@ function formatTrace<State>(from: string, prevState: State, action: Action, next
     })
 }
 
-export function useDispatcher<T>(moduleName: string, actions: Actions, store: Store): [Dispatch<T>, Action[]] {
+export function useDispatcher<T, S>(moduleName: string, actions: Actions, reducer: Reducer<S>): [S, Dispatch<T>, Action[]] {
     const [suspense, setSuspense] = useState<Action[]>([])
     const [suspend] = useSuspense()
-    const dispatch = async (actionType: T, payload?: object): Promise<Action> => {
+
+    const injectedReducer = (prevState: S | undefined, action: Action): S => {
+        const nextState = reducer(prevState, action)
+        if(prevState !== undefined) formatTrace(moduleName, prevState, action, nextState)
+
+        return nextState
+    }
+
+    const [state, dispatch] = useReducer(injectedReducer, injectedReducer(undefined, { type: '', status: '', createdAt: Date.now() }))
+
+    const wrappedDispatch = async (actionType: T, payload?: object): Promise<Action> => {
         const actionCreator = actions[actionType as unknown as string]
 
         const preAction = {
@@ -53,13 +62,12 @@ export function useDispatcher<T>(moduleName: string, actions: Actions, store: St
         }
 
         setSuspense(suspend(preAction))
+
         const result = await Promise.resolve(actionCreator(preAction))
 
         if (result.status === ActionStatus.PENDING) {
             result.status = ActionStatus.SUCCESS
-            const prevState = store.getState()
-            store.dispatch(result)
-            formatTrace(moduleName, prevState, result, store.getState())
+            dispatch(result)
         }
 
         if (result.status === ActionStatus.FAILED || result.response) {
@@ -70,8 +78,8 @@ export function useDispatcher<T>(moduleName: string, actions: Actions, store: St
             setSuspense(suspend(result, true))
         }, 500)
 
-        return result 
+        return result
     }
 
-    return [dispatch, suspense]
+    return [state, wrappedDispatch, suspense]
 }

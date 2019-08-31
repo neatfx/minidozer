@@ -1,5 +1,4 @@
-import { useState, useEffect, ReactElement, PropsWithChildren } from 'react'
-import { Unsubscribe, createStore, AnyAction, Store } from 'redux'
+import { useState, ReactElement, PropsWithChildren } from 'react'
 
 import { Action, useDispatcher } from './Dispatcher'
 import { Tracer } from './Utils'
@@ -7,7 +6,7 @@ import { Tracer } from './Utils'
 export interface Actions {
     [key: string]: (preAction: Action) => Action | Promise<Action>;
 }
-interface Reducer<S> {
+export interface Reducer<S> {
     (prevState: S | undefined, action: Action): S;
 }
 interface RouterProps {
@@ -40,16 +39,11 @@ export function useRouter(routeKey: string): [Function, string] {
 }
 
 export function compose<P, S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, module: Module<P, S, T>): React.FC<RouterProps & P> {
-    const store: Store<S, AnyAction> = createStore(reducer)
     const tracer = new Tracer('Core.Module' + ' > ' + moduleName)
 
     return (props): ReactElement | null => {
-        const [state, setState] = useState(store.getState())
-        useEffect((): Unsubscribe => store.subscribe((): void => {
-            setState(store.getState())
-        }))
+        const [state, dispatch, suspense] = useDispatcher<T, S>(moduleName, actions, reducer)
 
-        const [dispatch, suspense] = useDispatcher<T>(moduleName, actions, store)
         const context = {state, suspense, tracer, dispatch}
         nameMapContext.set(moduleName, context)
 
