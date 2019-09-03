@@ -60,11 +60,59 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
 
 ## Hook API
 
-```javascript
-// useRouter - 切换模块组件
+compose - 定义模块组件
 
-function Layout(): ReactElement {
-    // "active"参数为ModuleNavbar组件内部状态，其值对应当前处于可见状态的模块名称（ ModuleA|ModuleB|ModuleC ）
+```javascript
+// modules/foo/index.tsx
+
+import { compose, ModuleContext } from '@minidozer/Module' // 内置模块化工具
+import { actions, ActionType } from './actions' // 模块 Actions 及 Action-Type 类型
+import { reducer, State } from './reducer' // 模块 Reducer 及 State 类型
+
+export type Context = ModuleContext<State, ActionType> // 导出模块 Context 类型
+
+export default compose<Props, State, Types>('ModuleFoo', actions, reducer, (props): ReactElement => {
+    const { state, dispatcher, suspense, tracer } = props
+
+    // 作用于模块 ModuleFoo，代码提示可用
+    dispatcher.dispatch('ACTION_TYPE', payload)
+
+    // suspense 包含当前模块所有 Action 的实时状态队列
+    return(
+      <Fragment>
+        <SubComponent {...state} />
+        <ActionStatusIndicator queue={suspense}/>
+      </Fragment>
+    )
+  }
+)
+```
+
+useModuleContext - 引用模块上下文资源
+
+```javascript
+// modules/foo/some-component/index.tsx 或 modules/bar/some-component/index.tsx
+
+import { useModuleContext } from '@minidozer/Module'
+import { Context } from '@modules/foo'
+
+export function SomeComponent(): ReactElement {
+    const { state, dispatcher, suspense, tracer } = useModuleContext<Context>('ModuleFoo')
+
+    // 作用于模块 ModuleFoo，代码提示可用
+    dispatcher.dispatch('ACTION_TYPE', payload)
+
+    return(<Fragment />)
+}
+```
+
+useRouter - 模块路由
+
+```javascript
+// modules/../layout.tsx
+
+export function Layout(): ReactElement {
+    // "active" 为模块组件 "ModuleNav" 内部状态，对应当前处于可见状态的模块名（ "ModuleA"|"ModuleB"|"ModuleC" ）
     const [router, route] = useRouter('active')
 
     return(
@@ -76,36 +124,6 @@ function Layout(): ReactElement {
         </Fragment>
     )
 }
-```
-
-```javascript
-// compose - 定义模块组件
-
-function compose<Props, State, Types>('ModuleFoo', actions, reducer, ({ state, dispatcher, suspense, tracer }): ReactElement => {
-    // 作用于模块ModuleFoo内部
-    dispatcher.dispatch('ACTION_TYPE', payload)
-
-    // suspense包含当前模块所有Action的实时状态队列
-    return(
-      <Fragment>
-        <SubComponent {...state} />
-        <ActionStatusIndicator queue={suspense}/>
-      </Fragment>
-    )
-  }
-)
-```
-
-```javascript
-// useModuleContext - 引用模块操作
-
-function SomeComponent(): ReactElement => {
-    const { state, dispatcher, suspense, tracer } = useModuleContext('ModuleFoo')
-
-    dispatcher.dispatch('ACTION_TYPE', payload)
-
-    return(<Fragment />)
-})
 ```
 
 ## 使用
