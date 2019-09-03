@@ -19,6 +19,11 @@ interface ContextProps<S, T> {
     tracer: Tracer;
     dispatch: (actionType: T, payload?: object) => Promise<Action>;
 }
+export interface ModuleContext<S, T> {
+    state: S;
+    dispatch: (actionType: T, payload?: object) => Promise<Action>;
+    tracer: Tracer;
+}
 interface Module<P, S, T> {
     (props: PropsWithChildren<RouterProps> & P & ContextProps<S, T>): ReactElement; 
 }
@@ -42,9 +47,10 @@ export function compose<P, S, T>(moduleName: string, actions: Actions, reducer: 
     const tracer = new Tracer('Core.Module' + ' > ' + moduleName)
 
     return (props): ReactElement | null => {
-        const [state, dispatch, suspense] = useDispatcher<T, S>(moduleName, actions, reducer)
+        const [state, dispatch, suspense] = useDispatcher<S, T>(moduleName, actions, reducer)
 
         const context = {state, suspense, tracer, dispatch}
+        nameMapContext as Map<string, ContextProps<S, T>>
         nameMapContext.set(moduleName, context)
 
         let visible = true
@@ -54,6 +60,6 @@ export function compose<P, S, T>(moduleName: string, actions: Actions, reducer: 
     }
 }
 
-export function useModuleContext<S, T>(moduleName: string): ContextProps<S, T> {
+export function useModuleContext<T>(moduleName: string): T {
     return nameMapContext.get(moduleName)
 }

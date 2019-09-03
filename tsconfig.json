@@ -11,6 +11,18 @@
     "noImplicitReturns": true,
     // "allowSyntheticDefaultImports": true,
     // "experimentalDecorators": true
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": [
+        "./renderer-process/components/*"
+      ],
+      "@modules/*": [
+        "./renderer-process/modules/*"
+      ],
+      "@minidozer/*": [
+        "./renderer-process/minidozer/*"
+      ]
+    }
   },
   "include": [
     "main-process",

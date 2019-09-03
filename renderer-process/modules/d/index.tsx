@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { compose } from '../../minidozer/Module'
-import { actions } from './actions'
-import { reducer } from './reducer'
+import { compose, ModuleContext } from '@minidozer/Module'
 
+import { actions, ActionType } from './actions'
+import { reducer, State } from './reducer'
 import { OpsPanel } from './ops-panel'
 
 const Wrapper = styled.div`
@@ -12,6 +12,8 @@ const Wrapper = styled.div`
     height: 100%;
     border: 1px dashed #cccccc;
 `
+
+export type Context = ModuleContext<State, ActionType>
 
 export default compose('ModuleD', actions, reducer, (): ReactElement => {
     return(

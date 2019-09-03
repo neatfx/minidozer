@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { useModuleContext } from '../../../minidozer/Module'
+import { useModuleContext } from '@minidozer/Module'
 
 interface WrapperProps {
     hasBgColor: boolean;

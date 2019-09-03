@@ -30,7 +30,10 @@ const config = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         alias: {
-            'react-dom': '@hot-loader/react-dom'
+            'react-dom': '@hot-loader/react-dom',
+            '@components': resolve('renderer-process/components'),
+            '@modules': resolve('renderer-process/modules'),
+            '@minidozer': resolve('renderer-process/minidozer')
         }
     },
     module: {

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-import { Action } from '../../minidozer/Dispatcher'
-import { Tracer } from '../../minidozer/Utils'
+import { Action } from '@minidozer/Dispatcher'
+import { Tracer } from '@minidozer/Utils'
 
 const tracer = new Tracer('modules/b/actions')
 const exclusive = {

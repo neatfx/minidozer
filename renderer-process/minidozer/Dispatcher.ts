@@ -37,7 +37,7 @@ function formatTrace<State>(from: string, prevState: State, action: Action, next
     })
 }
 
-export function useDispatcher<T, S>(moduleName: string, actions: Actions, reducer: Reducer<S>): [S, Dispatch<T>, Action[]] {
+export function useDispatcher<S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>): [S, Dispatch<T>, Action[]] {
     const [suspense, setSuspense] = useState<Action[]>([])
     const [suspend] = useSuspense()
 

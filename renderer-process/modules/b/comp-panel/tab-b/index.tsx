@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 
-import { useModuleContext } from '../../../../minidozer/Module'
-import { Inspector } from '../../../../components/OpsPanel'
+import { useModuleContext } from '@minidozer/Module'
+import { Inspector } from '@components/OpsPanel'
 
 export function TabB(): ReactElement {
     const {state} = useModuleContext('ModuleB')

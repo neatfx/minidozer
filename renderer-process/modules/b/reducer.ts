@@ -1,7 +1,10 @@
-import { Action } from '../../minidozer/Dispatcher'
+import { Action } from '@minidozer/Dispatcher'
 
 export interface State { 
     hasBgColor: boolean;
+    compFoo: {
+        hasBgColor: boolean;
+    };
     opsPanel: {
         hidden: boolean;
         activeTab: number;

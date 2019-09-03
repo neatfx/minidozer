@@ -1,14 +1,14 @@
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { compose } from '../../minidozer/Module'
+import { compose, ModuleContext } from '@minidozer/Module'
+
+import Indicator from '@components/Indicator'
 
 import { actions, ActionType } from './actions'
 import { reducer, State } from './reducer'
 import { OpsPanel } from './comp-panel'
 import { ComponentFoo } from './comp-foo'
-
-import Indicator from '../../components/Indicator'
 
 interface WrapperProps {
     hasBgColor: boolean;
@@ -25,6 +25,8 @@ const FooWrapper = styled.div`
     top: 5px;
     left: 25px;
 `
+
+export type Context = ModuleContext<State, ActionType>
 
 export default compose<{}, State, ActionType>('ModuleB', actions, reducer, ({state, suspense}): ReactElement => {
     return(

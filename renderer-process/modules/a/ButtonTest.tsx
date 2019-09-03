@@ -1,9 +1,9 @@
 import React, { ReactElement, Fragment } from 'react'
 
-import { Tracer } from '../../minidozer/Utils'
+import { Tracer } from '@minidozer/Utils'
 
-import { CPU } from '../../components/Icons/Icons'
-import Button from '../../components/Button'
+import { CPU } from '@components/Icons/Icons'
+import Button from '@components/Button'
 
 const tracer = new Tracer('moduleA/CompsTest')
 

@@ -1,14 +1,14 @@
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { useRouter } from './minidozer/Module'
+import { useRouter } from '@minidozer/Module'
 
-import Navbar from './modules/navbar'
-import A from './modules/a'
-import B from './modules/b'
-import C from './modules/c'
-import D from './modules/d'
-import E from './modules/e'
+import Navbar from '@modules/navbar'
+import A from '@modules/a'
+import B from '@modules/b'
+import C from '@modules/c'
+import D from '@modules/d'
+import E from '@modules/e'
 
 const RootWrapper = styled.div`
     display: grid;

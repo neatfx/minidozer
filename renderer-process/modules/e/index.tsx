@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { compose } from '../../minidozer/Module'
-import { actions } from './actions'
-import { reducer } from './reducer'
+import { compose, ModuleContext } from '@minidozer/Module'
+
+import { actions, ActionType } from './actions'
+import { reducer, State } from './reducer'
 
 const Wrapper = styled.div`
     position: relative;
@@ -14,6 +15,8 @@ const CompA = styled.div`
     margin: 5px;
     padding: 5px;
 `
+
+export type Context = ModuleContext<State, ActionType>
 
 export default compose('ModuleE', actions, reducer, (): ReactElement => {
     return(

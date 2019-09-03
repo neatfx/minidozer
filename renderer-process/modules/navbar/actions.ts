@@ -1,4 +1,4 @@
-import { Action } from '../../minidozer/Dispatcher'
+import { Action } from '@minidozer/Dispatcher'
 
 const internal = {
     'SET_ACTIVE_NAV': (preAction: Action): Action => {

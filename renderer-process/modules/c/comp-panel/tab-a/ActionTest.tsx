@@ -1,14 +1,15 @@
 import React, { ReactElement, Fragment } from 'react'
 
-import { useModuleContext } from '../../../../minidozer/Module'
-import { Tracer } from '../../../../minidozer/Utils'
+import { useModuleContext } from '@minidozer/Module'
+import { Tracer } from '@minidozer/Utils'
 
-import Button from '../../../../components/Button'
+import Button from '@components/Button'
+import { Context } from '@modules/b'
 
 const tracer = new Tracer('moduleC/ActionTest')
 
 export function ActionTest(): ReactElement | null {
-    const {state, dispatch} = useModuleContext('ModuleB')
+    const { state, dispatch } = useModuleContext<Context>('ModuleB')
     const handleClick = (): void => {
         dispatch('TOGGLE_PANEL', {hidden: !state.opsPanel.hidden}).then(
             (result): void => tracer.log('TOGGLE_PANEL', result)

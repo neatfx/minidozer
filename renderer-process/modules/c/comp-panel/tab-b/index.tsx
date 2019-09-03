@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { useModuleContext } from '../../../../minidozer/Module'
-import { Inspector } from '../../../../components/OpsPanel'
+import { useModuleContext } from '@minidozer/Module'
+import { Inspector } from '@components/OpsPanel'
 
 const Wrapper = styled.div`
     display: grid;

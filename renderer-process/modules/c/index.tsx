@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { compose } from '../../minidozer/Module'
-import Indicator from '../../components/Indicator'
+import { compose, ModuleContext } from '@minidozer/Module'
+import Indicator from '@components/Indicator'
 
-import { actions } from './actions'
-import { reducer } from './reducer'
+import { actions, ActionType } from './actions'
+import { reducer, State } from './reducer'
 import { OpsPanel } from './comp-panel'
 
 const Wrapper = styled.div`
@@ -13,6 +13,8 @@ const Wrapper = styled.div`
     height: 100%;
     border: 1px dashed #cccccc;
 `
+
+export type Context = ModuleContext<State, ActionType>
 
 export default compose('ModuleC', actions, reducer, ({suspense}): ReactElement => {
     return(

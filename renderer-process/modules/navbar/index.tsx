@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react'
 
-import { compose } from '../../minidozer/Module'
+import { compose, ModuleContext } from '@minidozer/Module'
 
 import { actions, ActionType } from './actions'
 import { reducer, State } from './reducer'
@@ -11,7 +11,8 @@ import { layers } from 'react-icons-kit/feather/layers'
 import { cpu } from 'react-icons-kit/feather/cpu'
 import { command } from 'react-icons-kit/feather/command'
 import { settings } from 'react-icons-kit/feather/settings'
-import Navbar from '../../components/Navbar'
+
+import Navbar from '@components/Navbar'
 
 const navItems = [
     {
@@ -40,6 +41,8 @@ interface Props {
     foo?: number;
     bar: number;
 }
+
+export type Context = ModuleContext<State, ActionType>
 
 export default compose<Props, State, ActionType>('ModuleNavbar', actions, reducer, (props): ReactElement => {
     const { state, dispatch } = props

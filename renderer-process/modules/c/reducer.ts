@@ -1,4 +1,4 @@
-import { Action } from '../../minidozer/Dispatcher'
+import { Action } from '@minidozer/Dispatcher'
 
 export interface State { 
     opsPanel: {

@@ -1,7 +1,8 @@
 import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
-import { compose } from '../../minidozer/Module'
+import { compose, ModuleContext } from '@minidozer/Module'
+
 import { actions, ActionType } from './actions'
 import { reducer, State } from './reducers'
 
@@ -22,6 +23,8 @@ const CompA = styled.div`
     width: 486px;
     border: 1px solid #cccccc;
 `
+
+export type Context = ModuleContext<State, ActionType>
 
 export default compose<Props, State, ActionType>('ModuleA', actions, reducer, (): ReactElement => {
     return(

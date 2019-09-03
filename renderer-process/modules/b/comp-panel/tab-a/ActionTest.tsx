@@ -1,28 +1,39 @@
 import React, { ReactElement, Fragment } from 'react'
 
-import { useModuleContext } from '../../../../minidozer/Module'
+import { useModuleContext } from '@minidozer/Module'
 
-import Button from '../../../../components/Button'
+import Button from '@components/Button'
+
+import { Context } from '@modules/b'
 
 export function ActionTest(): ReactElement {
-    const { dispatch, state, tracer } = useModuleContext('ModuleB')
+    const { dispatch, state, tracer } = useModuleContext<Context>('ModuleB')
+
     const toggle = (): void => {
-        dispatch('TOGGLE_BG_COLOR', {hasBgColor: !state.hasBgColor}).then(
+        dispatch('TOGGLE_BG_COLOR', {
+            hasBgColor: !state.hasBgColor
+        }).then(
             (result): void => tracer.log('Action', 'TOGGLE_BG_COLOR', 'Return', result)
         )
     }
     const asyncToggle = (): void => {
-        dispatch('ASYNC_TOGGLE_BG_COLOR', {hasBgColor: !state.hasBgColor}).then(
+        dispatch('ASYNC_TOGGLE_BG_COLOR', {
+            hasBgColor: !state.hasBgColor
+        }).then(
             (result): void => tracer.log('Action', 'ASYNC_TOGGLE_BG_COLOR', 'Return', result)
         )
     }
     const toggleFoo = (): void => {
-        dispatch('TOGGLE_BG_COLOR_OF_FOO', {hasBgColor: !state.compFoo.hasBgColor}).then(
+        dispatch('TOGGLE_BG_COLOR_OF_FOO', {
+            hasBgColor: !state.compFoo.hasBgColor
+        }).then(
             (result): void => tracer.log('Action', 'TOGGLE_BG_COLOR_OF_FOO', 'Return', result)
         )
     }
     const asyncToggleFoo = (): void => {
-        dispatch('ASYNC_TOGGLE_BG_COLOR_OF_FOO', {hasBgColor: !state.compFoo.hasBgColor}).then(
+        dispatch('ASYNC_TOGGLE_BG_COLOR_OF_FOO', {
+            hasBgColor: !state.compFoo.hasBgColor
+        }).then(
             (result): void => tracer.log('Action', 'ASYNC_TOGGLE_BG_COLOR_OF_FOO', 'Return', result)
         )
     }

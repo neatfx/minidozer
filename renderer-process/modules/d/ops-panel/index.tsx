@@ -1,13 +1,14 @@
 import React, { ReactElement } from 'react'
 
-import { useModuleContext } from '../../../minidozer/Module'
+import { useModuleContext } from '@minidozer/Module'
+import Panel from '@components/OpsPanel'
 
 import { Icon } from 'react-icons-kit'
 import { gitPullRequest } from 'react-icons-kit/feather/gitPullRequest'
 import { layers } from 'react-icons-kit/feather/layers'
 import { cpu } from 'react-icons-kit/feather/cpu'
+
 import { TabA } from './tab-a'
-import Panel from '../../../components/OpsPanel'
 
 const tabs = [
     {
