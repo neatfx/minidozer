@@ -25,6 +25,11 @@ module.exports = {
     "react-hooks/rules-of-hooks": "error", // eslint-plugin-react-hooks, 检查 Hook 的规则
     "react-hooks/exhaustive-deps": "warn", // eslint-plugin-react-hooks, 检查 effect 的依赖
   },
+  "overrides": [
+    {
+      "rules": {}
+    }
+  ],
   "settings": {
     "react": {
       "pragma": "React",
