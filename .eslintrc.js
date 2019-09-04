@@ -27,7 +27,10 @@ module.exports = {
   },
   "overrides": [
     {
-      "rules": {}
+      "files": ["*.js"],
+      "rules": {
+        "quotes": ["error", "single"]
+      }
     }
   ],
   "settings": {
