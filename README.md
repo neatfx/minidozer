@@ -21,10 +21,10 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
 - 项目文件组织结构
 - 示例应用 - "Minidozer"
 - Electron
-  - v6.0.0-beta.5
+  - v6.0.7
   - 初始代码 & 应用打包配置
 - React
-  - v16.8.6
+  - v16.9.0
   - HMR
     - 【优化】采用 @hot-loader/react-dom 方案，避免引入 Babel 依赖
   - 模块化
@@ -49,7 +49,7 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
     - ~~快照测试~~
     - ~~E2E 测试~~
 - TypeScript
-  - v3.4.5
+  - v3.6.2
 - Webpack
   - v4.32.2
   - 最小化配置，使用默认优化项
