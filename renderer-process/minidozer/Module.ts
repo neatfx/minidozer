@@ -33,7 +33,7 @@ const nameMapContext = new Map<string, any>()
 export function useRouter(routeKey: string): [Function, string] {
     const [route, setRoute] = useState('_')
     const router = (stateObj: object): void => {
-        for (let [key, value] of Object.entries(stateObj)) {
+        for (const [key, value] of Object.entries(stateObj)) {
             if(key === routeKey) {
                 setRoute(value)
             }
