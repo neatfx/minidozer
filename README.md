@@ -2,9 +2,9 @@
 
 Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
 
-- 函数组件 + Styled-Components + CSS Grid 组合，代码简单易维护
+- 函数组件 + Styled-components + CSS Grid 组合，代码简单易维护
 - 内置微框架，基于 React Hook & TypeScript 支持状态管理、模块化、代码提示
-- 最小化依赖组合、版本更新及时，依赖配置满足基础需求，使用改造成本低
+- 最小化依赖组合，版本更新及时，依赖配置满足基础需求，使用改造成本低
 
 ## 为什么
 
@@ -50,14 +50,13 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
     - ~~E2E 测试~~
 - TypeScript
   - v3.6.2
+  - 使用 ESLint 进行代码检查
 - Webpack
   - v4.32.2
   - 最小化配置，使用默认优化项
   - 【优化】关闭 "ts-loader" 类型检查，配合使用 ForkTsCheckerWebpackPlugin 进行异步检查
   - 【优化】使用 DllPlugin 提取公共代码
   - 【优化】提取 runtimeChunk
-- 最小化依赖组合
-- 使用 ESLint 进行代码检查
 
 ## Hook API
 
