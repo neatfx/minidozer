@@ -93,12 +93,12 @@ export class AppMenu {
         )
         menu.append(
             new MenuItem({
-                role: 'forcereload'
+                role: 'forceReload'
             })
         )
         menu.append(
             new MenuItem({
-                role: 'toggledevtools'
+                role: 'toggleDevTools'
             })
         )
         menu.append(
