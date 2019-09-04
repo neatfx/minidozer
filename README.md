@@ -2,9 +2,9 @@
 
 Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
 
-- 内置基于 Hook 的微框架，支持状态管理、模块化
-- 函数组件、Styled-components、CSS Grid
-- 依赖少版本新，按基础需求配置，使用改造成本低
+- 函数组件 + Styled-Components + CSS Grid 组合，代码简单易维护
+- 内置微框架，基于 React Hook & TypeScript 支持状态管理、模块化、代码提示
+- 最小化依赖组合、版本更新及时，依赖配置满足基础需求，使用改造成本低
 
 ## 为什么
 
@@ -13,7 +13,8 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
 ## 截图
 
 ![demo-app](./screenshot/demo-app.png)
-![code-completion](./screenshot/code-completion.png)
+![code-hint-action-type](./screenshot/code-hint-action-type.png)
+![code-hint-state](./screenshot/code-hint-state.png)
 
 ## 模版内容
 
