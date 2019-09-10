@@ -14,7 +14,6 @@ interface Props {
     minibarX?: number;
     minibarY?: number;
     saveState?: CallableFunction;
-    container: HTMLElement; 
 }
 interface State {
     activeTab: number;
@@ -107,8 +106,8 @@ function useHandleEvents(props: Props): [State, object | null, React.Dispatch<Ac
             {
                 let mouseX =  action.payload.clientX
                 let mouseY =  action.payload.clientY
-                let deltaX =  mouseX? mouseX - state.startX : 0
-                let deltaY =  mouseY? mouseY - state.startY : 0
+                const deltaX =  mouseX? mouseX - state.startX : 0
+                const deltaY =  mouseY? mouseY - state.startY : 0
                 let left = state.left + deltaX
                 let top = state.top + deltaY
 
@@ -190,8 +189,6 @@ export default function OpsPanelContainer(props: Props): ReactElement {
     return (
         <OpsPanel
             tabs={props.tabs}
-            // minibarX={props.minibarX || 0}
-            // minibarY={props.minibarY || 0}
             handleMouseDown={(event: MouseEvent, node: HTMLElement): void => {
                 dispatch({
                     type: 'DRAG_START',
