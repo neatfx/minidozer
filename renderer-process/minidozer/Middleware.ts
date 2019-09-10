@@ -1,8 +1,31 @@
 import { Reducer } from './Module'
-import { Action } from './Dispatcher'
+import { Action, ActionStatus } from './Dispatcher'
 import { Tracer } from './Utils'
 
-export function logMiddleware<S>(from: string, prevState: S, action: Action, reducer: Reducer<S>): S {
+interface MiddlewareParams<S> {
+    from: string;
+    prevState: S;
+    action: Action;
+    reducer: Reducer<S>;
+    suspend: (action: Action<object>, destroy?: boolean) => Action<object>[];
+    setSuspense: Function;
+}
+
+export function suspenseMiddleware<S>({action, suspend, setSuspense }: MiddlewareParams<S>): void {
+    if (action.status === ActionStatus.PENDING) {
+        action.status = ActionStatus.SUCCESS
+    }
+
+    if (action.status === ActionStatus.FAILED || action.response) {
+        setSuspense(suspend(action))
+    }
+
+    setTimeout((): void => {
+        setSuspense(suspend(action, true))
+    }, 500)
+}
+
+export function logMiddleware<S>({ from, prevState, action, reducer }: MiddlewareParams<S>): void {
     const tracer = new Tracer('Minidozer.Dispatcher')
     const nextState = reducer(prevState, action)
 
@@ -12,10 +35,4 @@ export function logMiddleware<S>(from: string, prevState: S, action: Action, red
         'Action': action,
         'Next State': nextState
     })
-
-    return nextState
-}
-
-export async function asyncActionMiddleware(preAction: Action, creator: (preAction: Action) => Action | Promise<Action>): Promise<Action> {
-    return await Promise.resolve(creator(preAction))
 }

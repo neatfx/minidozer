@@ -3,7 +3,7 @@ import { Action, ActionStatus } from './Dispatcher'
 let suspenseQueue: Action[] = []
 
 export function useSuspense(): [(action: Action, destroy?: boolean) => Action[]] {
-    const suspend = (action: Action, destroy: boolean = false): Action[] => { 
+    const suspend = (action: Action, destroy = false): Action[] => { 
         suspenseQueue = [...suspenseQueue].filter((item): boolean => item.createdAt !== action.createdAt)
         if(!destroy){
             if(action.status === ActionStatus.PENDING) {

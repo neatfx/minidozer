@@ -1,7 +1,7 @@
 import { useState, useReducer } from 'react'
 
 import { Actions, Reducer } from './Module'
-import { logMiddleware, asyncActionMiddleware } from './Middleware'
+import { logMiddleware, suspenseMiddleware } from './Middleware'
 import { useSuspense } from './Suspense'
 
 export interface Action<T = object> {
@@ -23,7 +23,7 @@ interface Dispatch<T> {
 export enum ActionStatus {
     PENDING = 'PENDING',
     SUCCESS = 'SUCCESS',
-    FAILED = 'FAILED' 
+    FAILED = 'FAILED'
 }
 
 export function useDispatcher<S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S): [S, Dispatch<T>, Action[]] {
@@ -43,24 +43,26 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
 
         setSuspense(suspend(preAction))
 
-        const action = await asyncActionMiddleware(preAction, actions[actionType as unknown as string])
-        logMiddleware(moduleName, state, action, reducer)
-
-        dispatch(action)
-
-        if (action.status === ActionStatus.PENDING) {
-            action.status = ActionStatus.SUCCESS
+        const middlewares = [
+            suspenseMiddleware,
+            logMiddleware,
+        ]
+        const params = {
+            from: moduleName,
+            prevState: state,
+            action: await Promise.resolve(actions[preAction.type](preAction)),
+            reducer,
+            suspend,
+            setSuspense,
         }
 
-        if (action.status === ActionStatus.FAILED || action.response) {
-            setSuspense(suspend(action))
+        for (const middleware of middlewares) {
+            middleware(params)
         }
 
-        setTimeout((): void => {
-            setSuspense(suspend(action, true))
-        }, 500)
+        dispatch(params.action)
 
-        return action
+        return params.action
     }
 
     return [state, wrappedDispatch, suspense]
