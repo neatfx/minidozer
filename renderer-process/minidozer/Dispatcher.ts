@@ -1,7 +1,7 @@
 import { useState, useReducer } from 'react'
 
 import { Actions, Reducer } from './Module'
-import { logMiddleware } from './Middleware'
+import { logMiddleware, asyncActionMiddleware } from './Middleware'
 import { useSuspense } from './Suspense'
 
 export interface Action<T = object> {
@@ -33,8 +33,6 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
     const [state, dispatch] = useReducer(reducer, defaultState)
 
     const wrappedDispatch = async (actionType: T, payload?: object): Promise<Action> => {
-        const actionCreator = actions[actionType as unknown as string]
-
         const preAction = {
             type: actionType as unknown as string,
             status: ActionStatus.PENDING,
@@ -45,13 +43,13 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
 
         setSuspense(suspend(preAction))
 
-        const action = await Promise.resolve(actionCreator(preAction))
-
+        const action = await asyncActionMiddleware(preAction, actions[actionType as unknown as string])
         logMiddleware(moduleName, state, action, reducer)
+
+        dispatch(action)
 
         if (action.status === ActionStatus.PENDING) {
             action.status = ActionStatus.SUCCESS
-            dispatch(action)
         }
 
         if (action.status === ActionStatus.FAILED || action.response) {

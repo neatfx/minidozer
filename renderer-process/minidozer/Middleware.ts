@@ -2,12 +2,11 @@ import { Reducer } from './Module'
 import { Action } from './Dispatcher'
 import { Tracer } from './Utils'
 
-const tracer = new Tracer('Core.Dispatcher')
-
 export function logMiddleware<S>(from: string, prevState: S, action: Action, reducer: Reducer<S>): S {
+    const tracer = new Tracer('Minidozer.Dispatcher')
     const nextState = reducer(prevState, action)
 
-    tracer.log('[ Core.Dispatcher > Action ]', {
+    tracer.log('Action', {
         'From': from,
         'Prev State': prevState,
         'Action': action,
@@ -15,4 +14,8 @@ export function logMiddleware<S>(from: string, prevState: S, action: Action, red
     })
 
     return nextState
+}
+
+export async function asyncActionMiddleware(preAction: Action, creator: (preAction: Action) => Action | Promise<Action>): Promise<Action> {
+    return await Promise.resolve(creator(preAction))
 }
