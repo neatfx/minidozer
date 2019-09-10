@@ -67,11 +67,11 @@ compose - 定义模块组件
 
 import { compose, ModuleContext } from '@minidozer/Module' // 内置模块化工具
 import { actions, ActionType } from './actions' // 模块 Actions 及 Action-Type 类型
-import { reducer, State } from './reducer' // 模块 Reducer 及 State 类型
+import { reducer, State, defaultState } from './reducer' // 模块 Reducer、默认 state、 state 类型
 
 export type Context = ModuleContext<State, ActionType> // 导出模块 Context 类型
 
-export default compose<Props, State, Types>('ModuleFoo', actions, reducer, (props): ReactElement => {
+export default compose<Props, State, Types>('ModuleFoo', actions, reducer, defaultState, (props): ReactElement => {
     const { state, dispatcher, suspense, tracer } = props
 
     // 作用于模块 ModuleFoo，代码提示可用
