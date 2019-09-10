@@ -36,9 +36,9 @@ const exclusive = {
         })
     },
     'ASYNC_HTTP_GET': async (preAction: Action): Promise<Action> => {
-        tracer.log('ASYNC_HTTP', 'HTTP请求开始...')
+        tracer.log('ASYNC_HTTP_GET', 'HTTP请求开始...')
         const result = await axios.get('https://www.mocky.io/v2/5185415ba171ea3a00704eed')
-        tracer.log('ASYNC_HTTP', 'HTTP请求成功返回数据', result.data)
+        tracer.log('ASYNC_HTTP_GET', 'HTTP请求成功返回数据', result.data)
         preAction.response = 'HTTP 200'
         preAction.payload = result.data
         return preAction
