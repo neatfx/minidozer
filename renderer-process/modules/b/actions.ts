@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Action } from '@minidozer/Dispatcher'
 import { Tracer } from '@minidozer/Utils'
 
-const tracer = new Tracer('modules/b/actions')
+const tracer = new Tracer('Action')
 const exclusive = {
     'SAVE_OPS_PANEL_STATE': (preAction: Action): Action => {
         return preAction

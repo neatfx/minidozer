@@ -44,7 +44,7 @@ export function useRouter(routeKey: string): [Function, string] {
 }
 
 export function compose<P, S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S, module: Module<P, S, T>): React.FC<RouterProps & P> {
-    const tracer = new Tracer('Core.Module' + ' > ' + moduleName)
+    const tracer = new Tracer('Minidozer.Module' + ' > ' + moduleName)
 
     return (props): ReactElement | null => {
         const [state, dispatch, suspense] = useDispatcher<S, T>(moduleName, actions, reducer, defaultState)

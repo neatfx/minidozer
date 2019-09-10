@@ -13,43 +13,43 @@ export function ActionTest(): ReactElement {
         dispatch('TOGGLE_BG_COLOR', {
             hasBgColor: !state.hasBgColor
         }).then(
-            (result): void => tracer.log('Action', 'TOGGLE_BG_COLOR', 'Return', result)
+            (result): void => tracer.log('Action Result', result)
         )
     }
     const asyncToggle = (): void => {
         dispatch('ASYNC_TOGGLE_BG_COLOR', {
             hasBgColor: !state.hasBgColor
         }).then(
-            (result): void => tracer.log('Action', 'ASYNC_TOGGLE_BG_COLOR', 'Return', result)
+            (result): void => tracer.log('Action Result', result)
         )
     }
     const toggleFoo = (): void => {
         dispatch('TOGGLE_BG_COLOR_OF_FOO', {
             hasBgColor: !state.compFoo.hasBgColor
         }).then(
-            (result): void => tracer.log('Action', 'TOGGLE_BG_COLOR_OF_FOO', 'Return', result)
+            (result): void => tracer.log('Action Result', result)
         )
     }
     const asyncToggleFoo = (): void => {
         dispatch('ASYNC_TOGGLE_BG_COLOR_OF_FOO', {
             hasBgColor: !state.compFoo.hasBgColor
         }).then(
-            (result): void => tracer.log('Action', 'ASYNC_TOGGLE_BG_COLOR_OF_FOO', 'Return', result)
+            (result): void => tracer.log('Action Result', result)
         )
     }
     const asyncHttpGet = (): void => {
         dispatch('ASYNC_HTTP_GET').then(
-            (result): void => tracer.log('Action', 'ASYNC_HTTP_GET', 'Return', result)
+            (result): void => tracer.log('Action Result', result)
         )
     }
     const handlError = (): void => {
         dispatch('ERROR').then(
-            (result): void => tracer.log('Action', 'ERROR', 'Return', result)
+            (result): void => tracer.log('Action Result', result)
         )
     }
     const handleAsyncError = (): void => {
         dispatch('ASYNC_ERROR').then(
-            (result): void => tracer.log('Action', 'ASYNC_ERROR', 'Return', result)
+            (result): void => tracer.log('Action Result', result)
         )
     }
 
