@@ -30,13 +30,7 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
     const [suspense, setSuspense] = useState<Action[]>([])
     const [suspend] = useSuspense()
 
-    const injectedReducer = (prevState: S, action: Action): S => {
-        const nextState = logMiddleware(moduleName, prevState, action, reducer)
-
-        return nextState
-    }
-
-    const [state, dispatch] = useReducer(injectedReducer, defaultState)
+    const [state, dispatch] = useReducer(reducer, defaultState)
 
     const wrappedDispatch = async (actionType: T, payload?: object): Promise<Action> => {
         const actionCreator = actions[actionType as unknown as string]
@@ -51,22 +45,24 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
 
         setSuspense(suspend(preAction))
 
-        const result = await Promise.resolve(actionCreator(preAction))
+        const action = await Promise.resolve(actionCreator(preAction))
 
-        if (result.status === ActionStatus.PENDING) {
-            result.status = ActionStatus.SUCCESS
-            dispatch(result)
+        logMiddleware(moduleName, state, action, reducer)
+
+        if (action.status === ActionStatus.PENDING) {
+            action.status = ActionStatus.SUCCESS
+            dispatch(action)
         }
 
-        if (result.status === ActionStatus.FAILED || result.response) {
-            setSuspense(suspend(result))
+        if (action.status === ActionStatus.FAILED || action.response) {
+            setSuspense(suspend(action))
         }
 
         setTimeout((): void => {
-            setSuspense(suspend(result, true))
+            setSuspense(suspend(action, true))
         }, 500)
 
-        return result
+        return action
     }
 
     return [state, wrappedDispatch, suspense]
