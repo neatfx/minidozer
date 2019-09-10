@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { compose, ModuleContext } from '@minidozer/Module'
 
 import { actions, ActionType } from './actions'
-import { reducer, State } from './reducer'
+import { reducer, State, defaultState } from './reducer'
 import { OpsPanel } from './ops-panel'
 
 const Wrapper = styled.div`
@@ -15,7 +15,7 @@ const Wrapper = styled.div`
 
 export type Context = ModuleContext<State, ActionType>
 
-export default compose('ModuleD', actions, reducer, (): ReactElement => {
+export default compose('ModuleD', actions, reducer, defaultState, (): ReactElement => {
     return(
         <Wrapper>
             <OpsPanel />

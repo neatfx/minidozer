@@ -11,7 +11,7 @@ export interface State {
     };
 }
 
-const defaultState = {
+export const defaultState = {
     opsPanel: {
         hidden: false,
         activeTab: 0,

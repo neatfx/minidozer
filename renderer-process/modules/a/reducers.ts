@@ -4,7 +4,7 @@ export interface State {
     key: string;
 }
 
-const defaultState: State = {
+export const defaultState: State = {
     key: 'none'
 }
 

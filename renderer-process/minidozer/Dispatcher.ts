@@ -1,8 +1,8 @@
 import { useState, useReducer } from 'react'
 
 import { Actions, Reducer } from './Module'
+import { logMiddleware } from './Middleware'
 import { useSuspense } from './Suspense'
-import { Tracer } from './Utils'
 
 export interface Action<T = object> {
     type: string;
@@ -26,29 +26,17 @@ export enum ActionStatus {
     FAILED = 'FAILED' 
 }
 
-const tracer = new Tracer('Core.Dispatcher')
-
-function formatTrace<State>(from: string, prevState: State, action: Action, nextState: State): void {
-    tracer.log('Action', {
-        'From': from,
-        'Prev State': prevState,
-        'Action': action,
-        'Next State': nextState
-    })
-}
-
-export function useDispatcher<S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>): [S, Dispatch<T>, Action[]] {
+export function useDispatcher<S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S): [S, Dispatch<T>, Action[]] {
     const [suspense, setSuspense] = useState<Action[]>([])
     const [suspend] = useSuspense()
 
-    const injectedReducer = (prevState: S | undefined, action: Action): S => {
-        const nextState = reducer(prevState, action)
-        if(prevState !== undefined) formatTrace(moduleName, prevState, action, nextState)
+    const injectedReducer = (prevState: S, action: Action): S => {
+        const nextState = logMiddleware(moduleName, prevState, action, reducer)
 
         return nextState
     }
 
-    const [state, dispatch] = useReducer(injectedReducer, injectedReducer(undefined, { type: '', status: '', createdAt: Date.now() }))
+    const [state, dispatch] = useReducer(injectedReducer, defaultState)
 
     const wrappedDispatch = async (actionType: T, payload?: object): Promise<Action> => {
         const actionCreator = actions[actionType as unknown as string]

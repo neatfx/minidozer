@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react'
 import { compose, ModuleContext } from '@minidozer/Module'
 
 import { actions, ActionType } from './actions'
-import { reducer, State } from './reducer'
+import { reducer, State, defaultState } from './reducer'
 
 import { Icon } from 'react-icons-kit'
 import { gitPullRequest } from 'react-icons-kit/feather/gitPullRequest'
@@ -44,7 +44,7 @@ interface Props {
 
 export type Context = ModuleContext<State, ActionType>
 
-export default compose<Props, State, ActionType>('ModuleNavbar', actions, reducer, (props): ReactElement => {
+export default compose<Props, State, ActionType>('ModuleNavbar', actions, reducer, defaultState, (props): ReactElement => {
     const { state, dispatch } = props
     const saveState = (state: { activeNav: string }): void => {
         dispatch('SET_ACTIVE_NAV', state)

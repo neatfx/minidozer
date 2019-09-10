@@ -43,11 +43,11 @@ export function useRouter(routeKey: string): [Function, string] {
     return [router, route]
 }
 
-export function compose<P, S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, module: Module<P, S, T>): React.FC<RouterProps & P> {
+export function compose<P, S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S, module: Module<P, S, T>): React.FC<RouterProps & P> {
     const tracer = new Tracer('Core.Module' + ' > ' + moduleName)
 
     return (props): ReactElement | null => {
-        const [state, dispatch, suspense] = useDispatcher<S, T>(moduleName, actions, reducer)
+        const [state, dispatch, suspense] = useDispatcher<S, T>(moduleName, actions, reducer, defaultState)
 
         const context = {state, suspense, tracer, dispatch}
         nameMapContext as Map<string, ContextProps<S, T>>

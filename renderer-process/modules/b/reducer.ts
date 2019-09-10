@@ -15,7 +15,7 @@ export interface State {
     };
 }
 
-const defaultState = {
+export const defaultState = {
     hasBgColor: false,
     compFoo: {
         hasBgColor: false,

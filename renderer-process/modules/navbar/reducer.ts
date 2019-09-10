@@ -4,7 +4,7 @@ export interface State {
     activeNav: string;
 }
 
-const defaultState: State = {
+export const defaultState: State = {
     activeNav: 'ModuleA',
 }
 
