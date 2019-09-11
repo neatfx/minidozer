@@ -52,10 +52,7 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
             setSuspense,
         }
 
-        for (const middleware of middlewares.internal) {
-            middleware(params)
-        }
-        for (const middleware of middlewares.external) {
+        for (const middleware of middlewares.internal.concat(middlewares.external)) {
             middleware(params)
         }
 
