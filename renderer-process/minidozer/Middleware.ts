@@ -10,8 +10,12 @@ interface MiddlewareParams<S> {
     suspend: (action: Action<object>, destroy?: boolean) => Action<object>[];
     setSuspense: Function;
 }
+interface Middlewares {
+    readonly internal: (<S>(params: MiddlewareParams<S>) => void)[];
+    external: (<S>(params: MiddlewareParams<S>) => void)[];
+}
 
-export function suspenseMiddleware<S>({action, suspend, setSuspense }: MiddlewareParams<S>): void {
+function suspenseMiddleware<S>({action, suspend, setSuspense }: MiddlewareParams<S>): void {
     if (action.status === ActionStatus.PENDING) {
         action.status = ActionStatus.SUCCESS
     }
@@ -25,7 +29,7 @@ export function suspenseMiddleware<S>({action, suspend, setSuspense }: Middlewar
     }, 500)
 }
 
-export function logMiddleware<S>({ from, prevState, action, reducer }: MiddlewareParams<S>): void {
+function logMiddleware<S>({ from, prevState, action, reducer }: MiddlewareParams<S>): void {
     const tracer = new Tracer('Minidozer.Dispatcher')
     const nextState = reducer(prevState, action)
 
@@ -35,4 +39,9 @@ export function logMiddleware<S>({ from, prevState, action, reducer }: Middlewar
         'Action': action,
         'Next State': nextState
     })
+}
+
+export const middlewares: Middlewares = {
+    internal: [suspenseMiddleware, logMiddleware],
+    external: []
 }

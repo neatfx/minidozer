@@ -1,7 +1,7 @@
 import { useState, useReducer } from 'react'
 
 import { Actions, Reducer } from './Module'
-import { logMiddleware, suspenseMiddleware } from './Middleware'
+import { middlewares } from './Middleware'
 import { useSuspense } from './Suspense'
 
 export interface Action<T = object> {
@@ -41,12 +41,8 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
             createdAt: Date.now()
         }
 
-        setSuspense(suspend(preAction))
+        if (middlewares.internal.length) setSuspense(suspend(preAction))
 
-        const middlewares = [
-            suspenseMiddleware,
-            logMiddleware,
-        ]
         const params = {
             from: moduleName,
             prevState: state,
@@ -56,7 +52,10 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
             setSuspense,
         }
 
-        for (const middleware of middlewares) {
+        for (const middleware of middlewares.internal) {
+            middleware(params)
+        }
+        for (const middleware of middlewares.external) {
             middleware(params)
         }
 

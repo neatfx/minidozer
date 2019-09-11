@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import { useRouter } from '@minidozer/Module'
+import { middlewares } from '@minidozer/Middleware'
 
 import Navbar from '@modules/navbar'
 import A from '@modules/a'
@@ -20,6 +21,8 @@ const RightWrapper = styled.div`
     display: grid;
     padding: 10px;
 `
+
+middlewares.external = [(): void => { console.log('external middleware 01') }]
 
 export function Layout(): ReactElement {
     const [router, route] = useRouter('activeNav')
