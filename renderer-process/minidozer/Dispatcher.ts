@@ -2,7 +2,6 @@ import { useState, useReducer } from 'react'
 
 import { Actions, Reducer } from './Module'
 import { middlewares } from './Middleware'
-import { useSuspense } from './Suspense'
 
 export interface Action<T = object> {
     type: string;
@@ -16,7 +15,7 @@ export interface Action<T = object> {
     createdAt: number;
 }
 
-interface Dispatch<T> {
+export interface Dispatch<T> {
     (actionType: T, payload?: object): Promise<Action>;
 }
 
@@ -28,37 +27,31 @@ export enum ActionStatus {
 
 export function useDispatcher<S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S): [S, Dispatch<T>, Action[]] {
     const [suspense, setSuspense] = useState<Action[]>([])
-    const [suspend] = useSuspense()
-
     const [state, dispatch] = useReducer(reducer, defaultState)
 
     const wrappedDispatch = async (actionType: T, payload?: object): Promise<Action> => {
-        const preAction = {
+        const prevAction = {
             type: actionType as unknown as string,
             status: ActionStatus.PENDING,
             response: '',
             payload: payload,
             createdAt: Date.now()
         }
-
-        if (middlewares.internal.length) setSuspense(suspend(preAction))
-
         const params = {
-            from: moduleName,
-            prevState: state,
-            action: await Promise.resolve(actions[preAction.type](preAction)),
+            moduleName,
+            state,
+            prevAction,
+            actionCreator: actions[prevAction.type],
             reducer,
-            suspend,
+            dispatch,
             setSuspense,
         }
 
         for (const middleware of middlewares.internal.concat(middlewares.external)) {
-            middleware(params)
+            await middleware(params)
         }
 
-        dispatch(params.action)
-
-        return params.action
+        return prevAction
     }
 
     return [state, wrappedDispatch, suspense]

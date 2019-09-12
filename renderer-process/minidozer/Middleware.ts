@@ -3,45 +3,82 @@ import { Action, ActionStatus } from './Dispatcher'
 import { Tracer } from './Utils'
 
 interface MiddlewareParams<S> {
-    from: string;
-    prevState: S;
-    action: Action;
+    moduleName: string;
+    state: S;
+    prevAction: Action;
+    actionCreator: (preAction: Action<object>) => Action<object> | Promise<Action<object>>;
     reducer: Reducer<S>;
-    suspend: (action: Action<object>, destroy?: boolean) => Action<object>[];
+    dispatch: React.Dispatch<Action<object>>;
     setSuspense: Function;
 }
 interface Middlewares {
-    readonly internal: (<S>(params: MiddlewareParams<S>) => void)[];
-    external: (<S>(params: MiddlewareParams<S>) => void)[];
+    readonly internal: (<S>(params: MiddlewareParams<S>) => Promise<void>)[];
+    external: (<S>(params: MiddlewareParams<S>) => Promise<void>)[];
 }
 
-function suspenseMiddleware<S>({action, suspend, setSuspense }: MiddlewareParams<S>): void {
-    if (action.status === ActionStatus.PENDING) {
-        action.status = ActionStatus.SUCCESS
-    }
+const actionCache: Map<string, Promise<Action>> = new Map()
 
-    if (action.status === ActionStatus.FAILED || action.response) {
-        setSuspense(suspend(action))
-    }
-
-    setTimeout((): void => {
-        setSuspense(suspend(action, true))
-    }, 500)
+async function asyncActionMiddleware<S>({ prevAction, actionCreator }: MiddlewareParams<S>): Promise<void> {
+    actionCache.set(prevAction.type, Promise.resolve(actionCreator(prevAction)))
 }
 
-function logMiddleware<S>({ from, prevState, action, reducer }: MiddlewareParams<S>): void {
+let suspenseQueue: Action[] = []
+
+function suspend(action: Action, destroy = false): Action[] { 
+    suspenseQueue = [...suspenseQueue].filter((item): boolean => item.createdAt !== action.createdAt)
+    if(!destroy){
+        if(action.status === ActionStatus.PENDING) {
+            suspenseQueue.push(action)
+        }
+        if(action.status === ActionStatus.SUCCESS && action.response) {
+            suspenseQueue.push(action)
+        }
+        if(action.status === ActionStatus.FAILED) {
+            suspenseQueue.push(action)
+        }
+    }
+
+    return suspenseQueue
+}
+
+async function suspenseMiddleware<S>({prevAction, setSuspense }: MiddlewareParams<S>): Promise<void> {
+    setSuspense(suspend(prevAction))
+
+    const action = await actionCache.get(prevAction.type)
+
+    if (action) {
+        if (action.status === ActionStatus.PENDING) {
+            action.status = ActionStatus.SUCCESS
+        }
+
+        if (action.status === ActionStatus.FAILED || action.response) {
+            setSuspense(suspend(action))
+        }
+
+        setTimeout((): void => {
+            setSuspense(suspend(action, true))
+        }, 500)
+    }
+}
+
+async function logMiddleware<S>({ moduleName, prevAction, reducer, dispatch, state }: MiddlewareParams<S>): Promise<void> {
     const tracer = new Tracer('Minidozer.Dispatcher')
-    const nextState = reducer(prevState, action)
+    const action = await actionCache.get(prevAction.type)
 
-    tracer.log('Action', {
-        'From': from,
-        'Prev State': prevState,
-        'Action': action,
-        'Next State': nextState
-    })
+    if (action) {
+        dispatch(action)
+        actionCache.delete(prevAction.type)
+
+        tracer.log('Action', {
+            'From': moduleName,
+            'Prev State': state,
+            'Action': action,
+            'Next State': reducer(state, action)
+        })
+    }
 }
 
 export const middlewares: Middlewares = {
-    internal: [suspenseMiddleware, logMiddleware],
+    internal: [asyncActionMiddleware, suspenseMiddleware, logMiddleware],
     external: []
 }

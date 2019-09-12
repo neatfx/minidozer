@@ -21,8 +21,11 @@ const RightWrapper = styled.div`
     display: grid;
     padding: 10px;
 `
+async function userDefinedMiddlewareA(): Promise<void> {
+    console.log('external middleware 01')
+}
 
-middlewares.external = [(): void => { console.log('external middleware 01') }]
+middlewares.external = [userDefinedMiddlewareA]
 
 export function Layout(): ReactElement {
     const [router, route] = useRouter('activeNav')
