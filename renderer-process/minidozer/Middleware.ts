@@ -16,35 +16,27 @@ interface Middlewares {
     external: (<S>(params: MiddlewareParams<S>) => Promise<void>)[];
 }
 
-const actionCache: Map<string, Promise<Action>> = new Map()
+const actionCache: Map<number, Promise<Action>> = new Map()
 
 async function asyncActionMiddleware<S>({ prevAction, actionCreator }: MiddlewareParams<S>): Promise<void> {
-    actionCache.set(prevAction.type, Promise.resolve(actionCreator(prevAction)))
+    actionCache.set(prevAction.createdAt, Promise.resolve(actionCreator(prevAction)))
 }
 
 let suspenseQueue: Action[] = []
 
-function suspend(action: Action, destroy = false): Action[] { 
+function suspend(action: Action, destroy = false): Action[] {
     suspenseQueue = [...suspenseQueue].filter((item): boolean => item.createdAt !== action.createdAt)
-    if(!destroy){
-        if(action.status === ActionStatus.PENDING) {
-            suspenseQueue.push(action)
-        }
-        if(action.status === ActionStatus.SUCCESS && action.response) {
-            suspenseQueue.push(action)
-        }
-        if(action.status === ActionStatus.FAILED) {
-            suspenseQueue.push(action)
-        }
+    if (!destroy) {
+        suspenseQueue.push(action)
     }
 
     return suspenseQueue
 }
 
-async function suspenseMiddleware<S>({prevAction, setSuspense }: MiddlewareParams<S>): Promise<void> {
+async function suspenseMiddleware<S>({ prevAction, setSuspense }: MiddlewareParams<S>): Promise<void> {
     setSuspense(suspend(prevAction))
 
-    const action = await actionCache.get(prevAction.type)
+    const action = await actionCache.get(prevAction.createdAt)
 
     if (action) {
         if (action.status === ActionStatus.PENDING) {
@@ -61,13 +53,13 @@ async function suspenseMiddleware<S>({prevAction, setSuspense }: MiddlewareParam
     }
 }
 
-async function logMiddleware<S>({ moduleName, prevAction, reducer, dispatch, state }: MiddlewareParams<S>): Promise<void> {
+async function logMiddleware<S>({ moduleName, state, prevAction, reducer, dispatch }: MiddlewareParams<S>): Promise<void> {
     const tracer = new Tracer('Minidozer.Dispatcher')
-    const action = await actionCache.get(prevAction.type)
+    const action = await actionCache.get(prevAction.createdAt)
 
     if (action) {
         dispatch(action)
-        actionCache.delete(prevAction.type)
+        actionCache.delete(prevAction.createdAt)
 
         tracer.log('Action', {
             'From': moduleName,
