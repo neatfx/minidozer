@@ -17,23 +17,22 @@ interface Middlewares {
 }
 
 const actionCache: Map<number, Promise<Action>> = new Map()
+let suspenseQueue: Action[] = []
 
 async function asyncActionMiddleware<S>({ prevAction, actionCreator }: MiddlewareParams<S>): Promise<void> {
     actionCache.set(prevAction.createdAt, Promise.resolve(actionCreator(prevAction)))
 }
 
-let suspenseQueue: Action[] = []
-
-function suspend(action: Action, destroy = false): Action[] {
-    suspenseQueue = [...suspenseQueue].filter((item): boolean => item.createdAt !== action.createdAt)
-    if (!destroy) {
-        suspenseQueue.push(action)
+async function suspenseMiddleware<S>({ prevAction, setSuspense }: MiddlewareParams<S>): Promise<void> {
+    const suspend = (action: Action, destroy = false): Action[] => {
+        suspenseQueue = suspenseQueue.filter((item): boolean => item.createdAt !== action.createdAt)
+        if (!destroy) {
+            suspenseQueue.push(action)
+        }
+    
+        return suspenseQueue
     }
 
-    return suspenseQueue
-}
-
-async function suspenseMiddleware<S>({ prevAction, setSuspense }: MiddlewareParams<S>): Promise<void> {
     setSuspense(suspend(prevAction))
 
     const action = await actionCache.get(prevAction.createdAt)
