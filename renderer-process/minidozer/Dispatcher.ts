@@ -25,7 +25,7 @@ export enum ActionStatus {
     FAILED = 'FAILED'
 }
 
-function useSuspense(): [Action[], (action: Action<object>, destroy?: boolean) => void] {
+function useSuspense(): [Action[], (action: Action, destroy?: boolean) => void, (action: Action) => void] {
     const [suspense, setSuspense] = useState<Action[]>([])
     const suspenseRef = useRef<Action[]>([])
     const suspend = (action: Action, destroy = false): void => {
@@ -35,13 +35,26 @@ function useSuspense(): [Action[], (action: Action<object>, destroy?: boolean) =
         }
         setSuspense(suspenseRef.current)
     }
+    const suspendNext = (action: Action): void => {
+        if (action.status === ActionStatus.PENDING) {
+            action.status = ActionStatus.SUCCESS
+        }
 
-    return [suspense, suspend]
+        if (action.status === ActionStatus.FAILED || action.response) {
+            suspend(action)
+        }
+
+        setTimeout((): void => {
+            suspend(action, true)
+        }, 500)
+    }
+
+    return [suspense, suspend, suspendNext]
 }
 
 export function useDispatcher<S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S): [S, Dispatch<T>, Action[]] {
     const [state, dispatch] = useReducer(reducer, defaultState)
-    const [suspense, suspend] = useSuspense()
+    const [suspense, suspendPrev, suspendNext] = useSuspense()
 
     const wrappedDispatch = async (actionType: T, payload?: object): Promise<Action> => {
         const prevAction = {
@@ -58,17 +71,17 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
                 prev: actions[prevAction.type](prevAction),
                 next: prevAction,
             },
-            reducer,
-            suspend,
+            reducer
         }
 
-        suspend(prevAction)
+        suspendPrev(prevAction)
 
         for (const middleware of middlewares.internal.concat(middlewares.external)) {
             await middleware(params)
         }
 
-        dispatch(prevAction)
+        dispatch(params.action.next)
+        suspendNext(params.action.next)
 
         return prevAction
     }
