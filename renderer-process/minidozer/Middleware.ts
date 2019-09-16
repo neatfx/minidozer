@@ -11,7 +11,7 @@ interface MiddlewareParams<S> {
     };
     reducer: Reducer<S>;
 }
-interface Middleware {
+export interface Middleware {
     <S>(params: MiddlewareParams<S>): Promise<void>;
 }
 interface Middlewares {

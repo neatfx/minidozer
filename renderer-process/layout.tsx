@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react'
 import styled from 'styled-components'
 
 import { useRouter } from '@minidozer/Module'
-import { middlewares } from '@minidozer/Middleware'
+import { middlewares, Middleware } from '@minidozer/Middleware'
 
 import Navbar from '@modules/navbar'
 import A from '@modules/a'
@@ -21,7 +21,7 @@ const RightWrapper = styled.div`
     display: grid;
     padding: 10px;
 `
-async function userDefinedMiddlewareA<P>(): Promise<void> {
+const userDefinedMiddlewareA: Middleware = async () => {
     console.log('external middleware 01')
 }
 

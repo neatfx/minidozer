@@ -4,7 +4,15 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
 
 - 函数组件 + Styled-components + CSS Grid 组合，简单易维护
 - 内置微框架，基于 React Hook & TypeScript 支持状态管理、模块化、代码提示
+- 内置异步 Action 处理、状态跟踪，并提供接口支持编写自定义插件
 - 最小化依赖组合，版本更新及时，配置满足基础需求，使用改造成本低
+
+核心依赖版本：
+
+- Electron v6.0.7
+- React v16.9.0
+- TypeScript v3.6.2
+- Webpack v4.32.2
 
 ## 为什么
 
@@ -21,10 +29,8 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
 - 项目文件组织结构
 - 示例应用 - "Minidozer"
 - Electron
-  - v6.0.7
   - 初始代码 & 应用打包配置
 - React
-  - v16.9.0
   - HMR
     - 【优化】采用 @hot-loader/react-dom 方案，避免引入 Babel 依赖
   - 模块化
@@ -49,7 +55,6 @@ Minidozer 是一个轻量级 Electron + React + TypeScript 工程模板
     - ~~快照测试~~
     - ~~E2E 测试~~
 - TypeScript
-  - v3.6.2
   - 使用 ESLint 进行代码检查
 - Webpack
   - v4.32.2
@@ -124,6 +129,28 @@ export function Layout(): ReactElement {
         </Fragment>
     )
 }
+```
+
+## 编写自定义插件
+
+```javascript
+// 以内置插件 “logMiddleware” 为例
+
+import { middlewares, Middleware } from '@minidozer/Middleware'
+import { log } from '@minidozer/Utils'
+
+const logMiddleware: Middleware = async params => {
+    const { moduleName, state, action, reducer } = params
+
+    log('Minidozer.Dispatcher')('Action', {
+        'From': moduleName,
+        'Prev State': state,
+        'Action': action.next,
+        'Next State': reducer(state, action.next)
+    })
+}
+
+middlewares.external = [userDefinedMiddlewareA]
 ```
 
 ## 使用
