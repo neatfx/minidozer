@@ -9,12 +9,12 @@ export function ActionTest(): ReactElement | null {
     const { state, dispatch, tracer } = useModuleContext<Context>('ModuleB')
     const handleClick = (): void => {
         dispatch('TOGGLE_PANEL', {hidden: !state.opsPanel.hidden}).then(
-            (result): void => tracer.log('Action Result', result)
+            (result): void => tracer('Action Result', result)
         )
     }
     const handleClickAsync = (): void => {
         dispatch('ASYNC_TOGGLE_PANEL', {hidden: !state.opsPanel.hidden}).then(
-            (result): void => tracer.log('Action Result', result)
+            (result): void => tracer('Action Result', result)
         )
     }
 

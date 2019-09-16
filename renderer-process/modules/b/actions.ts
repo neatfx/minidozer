@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 import { Action } from '@minidozer/Dispatcher'
-import { Tracer } from '@minidozer/Utils'
+import { log } from '@minidozer/Utils'
 
-const tracer = new Tracer('Action')
+const tracer = log('Action')
 const exclusive = {
     'SAVE_OPS_PANEL_STATE': (preAction: Action): Action => {
         return preAction
@@ -16,9 +16,9 @@ const exclusive = {
     },
     'ASYNC_TOGGLE_BG_COLOR': (preAction: Action): Promise<Action> => {
         return new Promise((resolve): void => {
-            tracer.log('ASYNC_TOGGLE_BG_COLOR', '模拟异步操作开始...')
+            tracer('ASYNC_TOGGLE_BG_COLOR', '模拟异步操作开始...')
             setTimeout((): void => {
-                tracer.log('ASYNC_TOGGLE_BG_COLOR', '模拟异步操作结束')
+                tracer('ASYNC_TOGGLE_BG_COLOR', '模拟异步操作结束')
                 resolve(preAction)
             }, 2000)
         })
@@ -28,17 +28,17 @@ const exclusive = {
     },
     'ASYNC_TOGGLE_BG_COLOR_OF_FOO': (preAction: Action): Promise<Action> => {
         return new Promise((resolve): void => {
-            tracer.log('ASYNC_TOGGLE_BG_COLOR_OF_FOO', '模拟异步操作开始...')
+            tracer('ASYNC_TOGGLE_BG_COLOR_OF_FOO', '模拟异步操作开始...')
             setTimeout((): void => {
-                tracer.log('ASYNC_TOGGLE_BG_COLOR_OF_FOO', '模拟异步操作结束')
+                tracer('ASYNC_TOGGLE_BG_COLOR_OF_FOO', '模拟异步操作结束')
                 resolve(preAction)
             }, 2000)
         })
     },
     'ASYNC_HTTP_GET': async (preAction: Action): Promise<Action> => {
-        tracer.log('ASYNC_HTTP_GET', 'HTTP请求开始...')
+        tracer('ASYNC_HTTP_GET', 'HTTP请求开始...')
         const result = await axios.get('https://www.mocky.io/v2/5185415ba171ea3a00704eed')
-        tracer.log('ASYNC_HTTP_GET', 'HTTP请求成功返回数据', result.data)
+        tracer('ASYNC_HTTP_GET', 'HTTP请求成功返回数据', result.data)
         preAction.response = 'HTTP 200'
         preAction.payload = result.data
         return preAction
@@ -60,9 +60,9 @@ const exclusive = {
     },
     'ASYNC_ERROR': (preAction: Action): Promise<Action> => {
         return new Promise((resolve): void => {
-            tracer.log('ASYNC_ERROR', '异步操作开始...')
+            tracer('ASYNC_ERROR', '异步操作开始...')
             setTimeout((): void => {
-                tracer.log('ASYNC_ERROR', '异步操作遇到错误')
+                tracer('ASYNC_ERROR', '异步操作遇到错误')
                 preAction.status = 'FAILED'
                 preAction.failure = {
                     type: 'error',
@@ -81,9 +81,9 @@ const shared = {
 const external = {
     'ASYNC_TOGGLE_PANEL': (preAction: Action): Promise<Action> => {
         return new Promise((resolve): void => {
-            tracer.log('ASYNC_SHOW_PANEL', '模拟异步操作开始...')
+            tracer('ASYNC_SHOW_PANEL', '模拟异步操作开始...')
             setTimeout((): void => {
-                tracer.log('ASYNC_SHOW_PANEL', '模拟异步操作结束')
+                tracer('ASYNC_SHOW_PANEL', '模拟异步操作结束')
                 resolve(preAction)
             }, 2000)
         })

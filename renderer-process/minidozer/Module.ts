@@ -1,7 +1,7 @@
 import { useState, ReactElement, PropsWithChildren } from 'react'
 
 import { Action, useDispatcher } from './Dispatcher'
-import { Tracer } from './Utils'
+import { log } from './Utils'
 
 export interface Actions {
     [key: string]: (preAction: Action) => Action | Promise<Action>;
@@ -16,13 +16,13 @@ interface RouterProps {
 interface ContextProps<S, T> {
     state: S;
     suspense: Action[];
-    tracer: Tracer;
+    tracer: Function;
     dispatch: (actionType: T, payload?: object) => Promise<Action>;
 }
 export interface ModuleContext<S, T> {
     state: S;
     dispatch: (actionType: T, payload?: object) => Promise<Action>;
-    tracer: Tracer;
+    tracer: Function;
 }
 interface Module<P, S, T> {
     (props: PropsWithChildren<RouterProps> & P & ContextProps<S, T>): ReactElement; 
@@ -44,7 +44,7 @@ export function useRouter(routeKey: string): [Function, string] {
 }
 
 export function compose<P, S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S, module: Module<P, S, T>): React.FC<RouterProps & P> {
-    const tracer = new Tracer('Minidozer.Module' + ' > ' + moduleName)
+    const tracer = log('Minidozer.Module' + ' > ' + moduleName)
 
     return (props): ReactElement | null => {
         const [state, dispatch, suspense] = useDispatcher<S, T>(moduleName, actions, reducer, defaultState)

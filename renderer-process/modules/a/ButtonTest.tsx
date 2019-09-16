@@ -1,15 +1,15 @@
 import React, { ReactElement, Fragment } from 'react'
 
-import { Tracer } from '@minidozer/Utils'
+import { log } from '@minidozer/Utils'
 
 import { CPU } from '@components/Icons/Icons'
 import Button from '@components/Button'
 
-const tracer = new Tracer('moduleA/CompsTest')
+const tracer = log('moduleA/CompsTest')
 
 export function ButtonTest(): ReactElement {
     const handleClick = async(): Promise<void> => {
-        tracer.log('foo')
+        tracer('foo')
     }
 
     return(

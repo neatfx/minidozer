@@ -1,6 +1,6 @@
 import { Reducer } from './Module'
 import { Action } from './Dispatcher'
-import { Tracer } from './Utils'
+import { log } from './Utils'
 
 interface MiddlewareParams<S> {
     moduleName: string;
@@ -27,9 +27,8 @@ const asyncActionMiddleware: Middleware = async params => {
 
 const logMiddleware: Middleware = async params => {
     const { moduleName, state, action, reducer } = params
-    const tracer = new Tracer('Minidozer.Dispatcher')
 
-    tracer.log('Action', {
+    log('Minidozer.Dispatcher')('Action', {
         'From': moduleName,
         'Prev State': state,
         'Action': action.next,
