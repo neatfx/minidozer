@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react'
+import { useState, useReducer, useRef } from 'react'
 
 import { Actions, Reducer } from './Module'
 import { middlewares } from './Middleware'
@@ -26,8 +26,20 @@ export enum ActionStatus {
 }
 
 export function useDispatcher<S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S): [S, Dispatch<T>, Action[]] {
-    const [suspense, setSuspense] = useState<Action[]>([])
     const [state, dispatch] = useReducer(reducer, defaultState)
+
+    const actionCache: Map<number, Promise<Action>> = new Map()
+
+    const [suspense, setSuspense] = useState<Action[]>([])
+    const suspenseQueueRef = useRef<Action[]>([])
+    const suspend = (action: Action, destroy = false): Action[] => {
+        suspenseQueueRef.current = suspenseQueueRef.current.filter((item): boolean => item.createdAt !== action.createdAt)
+        if (!destroy) {
+            suspenseQueueRef.current.push(action)
+        }
+        setSuspense(suspenseQueueRef.current)
+        return suspenseQueueRef.current
+    }
 
     const wrappedDispatch = async (actionType: T, payload?: object): Promise<Action> => {
         const prevAction = {
@@ -44,7 +56,8 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
             actionCreator: actions[prevAction.type],
             reducer,
             dispatch,
-            setSuspense,
+            actionCache,
+            suspend,
         }
 
         for (const middleware of middlewares.internal.concat(middlewares.external)) {

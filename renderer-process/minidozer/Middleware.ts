@@ -9,31 +9,20 @@ interface MiddlewareParams<S> {
     actionCreator: (preAction: Action<object>) => Action<object> | Promise<Action<object>>;
     reducer: Reducer<S>;
     dispatch: React.Dispatch<Action<object>>;
-    setSuspense: Function;
+    actionCache:  Map<number, Promise<Action>>; 
+    suspend: (action: Action<object>, destroy?: boolean) => Action<object>[];
 }
 interface Middlewares {
     readonly internal: (<S>(params: MiddlewareParams<S>) => Promise<void>)[];
     external: (<S>(params: MiddlewareParams<S>) => Promise<void>)[];
 }
 
-const actionCache: Map<number, Promise<Action>> = new Map()
-let suspenseQueue: Action[] = []
-
-async function asyncActionMiddleware<S>({ prevAction, actionCreator }: MiddlewareParams<S>): Promise<void> {
+async function asyncActionMiddleware<S>({ prevAction, actionCreator, actionCache }: MiddlewareParams<S>): Promise<void> {
     actionCache.set(prevAction.createdAt, Promise.resolve(actionCreator(prevAction)))
 }
 
-async function suspenseMiddleware<S>({ prevAction, setSuspense }: MiddlewareParams<S>): Promise<void> {
-    const suspend = (action: Action, destroy = false): Action[] => {
-        suspenseQueue = suspenseQueue.filter((item): boolean => item.createdAt !== action.createdAt)
-        if (!destroy) {
-            suspenseQueue.push(action)
-        }
-    
-        return suspenseQueue
-    }
-
-    setSuspense(suspend(prevAction))
+async function suspenseMiddleware<S>({ prevAction, actionCache, suspend }: MiddlewareParams<S>): Promise<void> {
+    suspend(prevAction)
 
     const action = await actionCache.get(prevAction.createdAt)
 
@@ -43,16 +32,16 @@ async function suspenseMiddleware<S>({ prevAction, setSuspense }: MiddlewarePara
         }
 
         if (action.status === ActionStatus.FAILED || action.response) {
-            setSuspense(suspend(action))
+            suspend(action)
         }
 
         setTimeout((): void => {
-            setSuspense(suspend(action, true))
+            suspend(action, true)
         }, 500)
     }
 }
 
-async function logMiddleware<S>({ moduleName, state, prevAction, reducer, dispatch }: MiddlewareParams<S>): Promise<void> {
+async function logMiddleware<S>({ moduleName, state, prevAction, reducer, dispatch, actionCache }: MiddlewareParams<S>): Promise<void> {
     const tracer = new Tracer('Minidozer.Dispatcher')
     const action = await actionCache.get(prevAction.createdAt)
 
