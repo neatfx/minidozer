@@ -5,55 +5,54 @@ import { Tracer } from './Utils'
 interface MiddlewareParams<S> {
     moduleName: string;
     state: S;
-    prevAction: Action;
-    actionCreator: (preAction: Action<object>) => Action<object> | Promise<Action<object>>;
+    action: {
+        prev: Action<object> | Promise<Action<object>>;
+        next: Action;
+    };
     reducer: Reducer<S>;
-    dispatch: React.Dispatch<Action<object>>;
-    actionCache:  Map<number, Promise<Action>>; 
-    suspend: (action: Action<object>, destroy?: boolean) => Action<object>[];
+    suspend: (action: Action<object>, destroy?: boolean) => void;
 }
 interface Middlewares {
     readonly internal: (<S>(params: MiddlewareParams<S>) => Promise<void>)[];
     external: (<S>(params: MiddlewareParams<S>) => Promise<void>)[];
 }
 
-async function asyncActionMiddleware<S>({ prevAction, actionCreator, actionCache }: MiddlewareParams<S>): Promise<void> {
-    actionCache.set(prevAction.createdAt, Promise.resolve(actionCreator(prevAction)))
+async function asyncActionMiddleware<S>(params: MiddlewareParams<S>): Promise<void> {
+    const { action } = params
+
+    action.next = await Promise.resolve(action.prev)
 }
 
-async function suspenseMiddleware<S>({ prevAction, actionCache, suspend }: MiddlewareParams<S>): Promise<void> {
-    suspend(prevAction)
+async function suspenseMiddleware<S>(params: MiddlewareParams<S>): Promise<void> {
+    const { suspend, action } = params
 
-    const action = await actionCache.get(prevAction.createdAt)
+    const act = action.next
 
-    if (action) {
-        if (action.status === ActionStatus.PENDING) {
-            action.status = ActionStatus.SUCCESS
+    if (act) {
+        if (act.status === ActionStatus.PENDING) {
+            act.status = ActionStatus.SUCCESS
         }
 
-        if (action.status === ActionStatus.FAILED || action.response) {
-            suspend(action)
+        if (act.status === ActionStatus.FAILED || act.response) {
+            suspend(act)
         }
 
         setTimeout((): void => {
-            suspend(action, true)
+            suspend(act, true)
         }, 500)
     }
 }
 
-async function logMiddleware<S>({ moduleName, state, prevAction, reducer, dispatch, actionCache }: MiddlewareParams<S>): Promise<void> {
+async function logMiddleware<S>(params: MiddlewareParams<S>): Promise<void> {
+    const { moduleName, state, reducer, action } = params
     const tracer = new Tracer('Minidozer.Dispatcher')
-    const action = await actionCache.get(prevAction.createdAt)
 
     if (action) {
-        dispatch(action)
-        actionCache.delete(prevAction.createdAt)
-
         tracer.log('Action', {
             'From': moduleName,
             'Prev State': state,
             'Action': action,
-            'Next State': reducer(state, action)
+            'Next State': reducer(state, action.next)
         })
     }
 }

@@ -21,7 +21,7 @@ const RightWrapper = styled.div`
     display: grid;
     padding: 10px;
 `
-async function userDefinedMiddlewareA(): Promise<void> {
+async function userDefinedMiddlewareA<P>(): Promise<void> {
     console.log('external middleware 01')
 }
 

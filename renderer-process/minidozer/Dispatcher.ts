@@ -25,21 +25,23 @@ export enum ActionStatus {
     FAILED = 'FAILED'
 }
 
+function useSuspense(): [Action[], (action: Action<object>, destroy?: boolean) => void] {
+    const [suspense, setSuspense] = useState<Action[]>([])
+    const suspenseRef = useRef<Action[]>([])
+    const suspend = (action: Action, destroy = false): void => {
+        suspenseRef.current = suspenseRef.current.filter((item): boolean => item.createdAt !== action.createdAt)
+        if (!destroy) {
+            suspenseRef.current.push(action)
+        }
+        setSuspense(suspenseRef.current)
+    }
+
+    return [suspense, suspend]
+}
+
 export function useDispatcher<S, T>(moduleName: string, actions: Actions, reducer: Reducer<S>, defaultState: S): [S, Dispatch<T>, Action[]] {
     const [state, dispatch] = useReducer(reducer, defaultState)
-
-    const actionCache: Map<number, Promise<Action>> = new Map()
-
-    const [suspense, setSuspense] = useState<Action[]>([])
-    const suspenseQueueRef = useRef<Action[]>([])
-    const suspend = (action: Action, destroy = false): Action[] => {
-        suspenseQueueRef.current = suspenseQueueRef.current.filter((item): boolean => item.createdAt !== action.createdAt)
-        if (!destroy) {
-            suspenseQueueRef.current.push(action)
-        }
-        setSuspense(suspenseQueueRef.current)
-        return suspenseQueueRef.current
-    }
+    const [suspense, suspend] = useSuspense()
 
     const wrappedDispatch = async (actionType: T, payload?: object): Promise<Action> => {
         const prevAction = {
@@ -52,17 +54,21 @@ export function useDispatcher<S, T>(moduleName: string, actions: Actions, reduce
         const params = {
             moduleName,
             state,
-            prevAction,
-            actionCreator: actions[prevAction.type],
+            action: {
+                prev: actions[prevAction.type](prevAction),
+                next: prevAction,
+            },
             reducer,
-            dispatch,
-            actionCache,
             suspend,
         }
+
+        suspend(prevAction)
 
         for (const middleware of middlewares.internal.concat(middlewares.external)) {
             await middleware(params)
         }
+
+        dispatch(prevAction)
 
         return prevAction
     }
