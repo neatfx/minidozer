@@ -169,3 +169,8 @@ $ npm run analyze:bundle
 # 应用打包
 $ npm run build:mac
 ```
+
+## 支持本项目
+
+![alipay](https://raw.githubusercontent.com/neatfx/donation/master/alipay.jpeg)
+![wechat-pay](https://raw.githubusercontent.com/neatfx/donation/master/wechat-pay.jpeg)
